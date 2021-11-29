@@ -6,11 +6,11 @@
 /*   By: knoda <knoda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/27 23:24:30 by knoda             #+#    #+#             */
-/*   Updated: 2021/11/18 13:54:09 by knoda            ###   ########.fr       */
+/*   Updated: 2021/11/29 14:09:39 by knoda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "philosophers.h"
 
 static int	ft_isspace(char c)
 {
