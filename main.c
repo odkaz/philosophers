@@ -6,7 +6,7 @@
 /*   By: knoda <knoda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 12:16:08 by knoda             #+#    #+#             */
-/*   Updated: 2021/11/28 16:23:37 by knoda            ###   ########.fr       */
+/*   Updated: 2021/11/28 19:53:21 by knoda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,23 +29,36 @@ void	print_vars(t_vars v)
 void		*do_philo(void *arg)
 {
 	t_philosopher	*p;
-	// long			eat_time;
 
 	p = (t_philosopher *)arg;
 	if (p->p_id % 2 == 1)
-		ft_wait(1);
+		usleep(200);
 	while (1)
 	{
 		printf("[%ld]think[%d]\n", get_time() - p->v.s_time, p->p_id);
 		pthread_mutex_lock(p->rhs);
-		// printf("took right[%d]\n", p->p_id);
+		// printf("[%d]gets the fork on the right %p\n", p->p_id, p->rhs);
+		// printf("[%ld]rhs[%d]\n", get_time() - p->v.s_time, p->p_id);
 		pthread_mutex_lock(p->lhs);
+		// printf("[%d]gets the fork on the left %p\n", p->p_id, p->lhs);
+
+		// printf("[%ld]lhs[%d]\n", get_time() - p->v.s_time, p->p_id);
+		// printf("[%d]starts eating\n", p->p_id);
+
 		printf("[%ld]eat[%d]\n", get_time() - p->v.s_time, p->p_id);
 		ft_wait(p->v.eat);
 		pthread_mutex_unlock(p->rhs);
+		// printf("[%d]releases the fork on the right %p\n", p->p_id, p->rhs);
+
+		// printf("[%ld]l-rhs[%d]\n", get_time() - p->v.s_time, p->p_id);
+
 		pthread_mutex_unlock(p->lhs);
+		// printf("[%d]releases the fork on the left %p\n", p->p_id, p->lhs);
+
+		// printf("[%ld]l-lhs[%d]\n", get_time() - p->v.s_time, p->p_id);
+
 		printf("[%ld]sleep[%d]\n", get_time() - p->v.s_time, p->p_id);
-		ft_wait(p->v.eat);
+		ft_wait(p->v.sleep);
 	}
 	return (arg);
 }
@@ -79,11 +92,13 @@ int	ft_launch_threads(pthread_t *thread, pthread_mutex_t *mutex, t_vars v, t_phi
 		if (i == 0)
 			p[i].lhs = &(mutex[v.num - 1]);
 		else
-			p[i].lhs = &(mutex[i]);
-		if (i == v.num - 1)
-			p[i].rhs = &(mutex[0]);
-		else
-			p[i].rhs = &(mutex[i + 1]);
+			p[i].lhs = &(mutex[i - 1]);
+		// if (i == v.num - 1)
+		// 	p[i].rhs = &(mutex[0]);
+		// else
+		p[i].rhs = &(mutex[i]);
+		// printf("lhs = %p\n", p[i].lhs);
+		// printf("rhs = %p\n", p[i].rhs);
 		if (pthread_create(&(thread[i]), NULL, &do_philo, (void *)(&(p[i]))) != 0)
 		{
 			return (-1);
@@ -103,6 +118,7 @@ int		ft_monitor(pthread_t *thread, pthread_mutex_t *mutex, t_vars v)
 		i = 0;
 		while (i < v.num)
 		{
+			// printf("i = %d\n", i);
 			pthread_join(thread[i], &retval);
 			i++;
 		}
@@ -120,20 +136,28 @@ int		main(int argc, char **argv)
 	pthread_mutex_t	*mutex;
 	t_vars			v;
 
-	p = (t_philosopher *)malloc(sizeof(t_philosopher) * (v.num + 1));
-	thread = (pthread_t *)malloc(sizeof(pthread_t) * (v.num + 1));
-	mutex = ft_init_mutex(v.num);
-
-
 	if (parse(argc, argv, &v) == -1)
 	{
 		printf("hint : enter [num] [die] [eat] [sleep] (times)\n");
 		return (1);
 	}
-	print_vars(v);
+	// print_vars(v);
+	p = (t_philosopher *)malloc(sizeof(t_philosopher) * (v.num + 1));
+	thread = (pthread_t *)malloc(sizeof(pthread_t) * (v.num + 1));
+	mutex = ft_init_mutex(v.num);
+	if (!mutex)
+	{
+		printf("mutex failed\n");
+		return (1);
+	}
 
-	// ft_launch_threads(thread, mutex, v, p);
-	// ft_monitor(thread, mutex, v);
+	ft_launch_threads(thread, mutex, v, p);
+	// while (1)
+	// {
+	// 	printf("------%ld-----\n", get_time() - v.s_time);
+	// 	ft_wait(200);
+	// }
+	ft_monitor(thread, mutex, v);
 
 	return (0);
 }

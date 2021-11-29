@@ -6,13 +6,13 @@
 #    By: knoda <knoda@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/27 12:16:30 by knoda             #+#    #+#              #
-#    Updated: 2021/11/27 19:11:08 by knoda            ###   ########.fr        #
+#    Updated: 2021/11/28 17:03:03 by knoda            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := philosophers
 CC := gcc
-CFLAGS := -Wall -Wextra -Werror
+CFLAGS := -Wall -Wextra -Werror -g -fsanitize=address
 SRCS := main.c parse.c get_time.c ft_wait.c
 OBJS := $(SRCS:.c=.o)
 
