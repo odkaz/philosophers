@@ -6,7 +6,7 @@
 /*   By: knoda <knoda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 12:16:08 by knoda             #+#    #+#             */
-/*   Updated: 2021/12/02 15:10:45 by knoda            ###   ########.fr       */
+/*   Updated: 2021/12/02 15:40:25 by knoda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ pthread_mutex_t	*init_mutex(int num)
 	return (mutex);
 }
 
-int	monitor(pthread_t *thread, pthread_mutex_t *mutex, t_vars *v)
+int	monitor(t_philosopher *p, pthread_t *thread, pthread_mutex_t *mutex, t_vars *v)
 {
 	void		*retval;
 	int			i;
@@ -51,6 +51,7 @@ int	monitor(pthread_t *thread, pthread_mutex_t *mutex, t_vars *v)
 		i++;
 	}
 	free(v->someone_is_dead);
+	free(p);
 	free(thread);
 	free(mutex);
 	return (0);
@@ -70,14 +71,13 @@ int	main(int argc, char **argv)
 	}
 	p = (t_philosopher *)malloc(sizeof(t_philosopher) * (v.num + 1));
 	thread = (pthread_t *)malloc(sizeof(pthread_t) * (v.num + 1));
+	if (!p || !thread)
+		return (1);
 	mutex = init_mutex(v.num);
 	if (!mutex)
-	{
-		printf("mutex failed\n");
 		return (1);
-	}
 	launch_threads(thread, mutex, &v, p);
-	monitor(thread, mutex, &v);
+	monitor(p, thread, mutex, &v);
 	return (0);
 }
 
