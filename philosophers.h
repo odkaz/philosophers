@@ -6,7 +6,7 @@
 /*   By: knoda <knoda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 12:18:24 by knoda             #+#    #+#             */
-/*   Updated: 2021/11/29 14:12:19 by knoda            ###   ########.fr       */
+/*   Updated: 2021/12/02 14:41:41 by knoda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,10 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <pthread.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 typedef struct s_vars {
 	int		num;
@@ -23,6 +27,8 @@ typedef struct s_vars {
 	int		times;
 	long	s_time;
 
+	int		*someone_is_dead;
+
 	// int				p_id;
 	// pthread_mutex_t *rhs;
 	// pthread_mutex_t *lhs;
@@ -30,9 +36,13 @@ typedef struct s_vars {
 
 typedef struct s_philosopher {
 	int				p_id;
-	t_vars			v;
+	long			last_meal;
+	int				eat_cnt;
+	t_vars			*v;
 	pthread_mutex_t *rhs;
 	pthread_mutex_t *lhs;
+	pthread_mutex_t	*w_mtx;
+	struct s_philosopher *all;
 }				t_philosopher;
 
 int		ft_isdigit(int c);
@@ -41,3 +51,10 @@ int		ft_atoi(const char *str);
 int		parse(int argc, char **argv, t_vars *v);
 long	get_time(void);
 void	ft_wait(long ms);
+
+enum	msg{
+	EAT,
+	SLEEP,
+	THINK,
+	DEAD	
+};

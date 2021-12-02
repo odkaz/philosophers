@@ -6,7 +6,7 @@
 /*   By: knoda <knoda@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 16:45:58 by knoda             #+#    #+#             */
-/*   Updated: 2021/11/28 16:24:13 by knoda            ###   ########.fr       */
+/*   Updated: 2021/12/02 13:53:17 by knoda            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,8 @@ int	parse(int argc, char **argv, t_vars *v)
 	else
 		v->times = -1;	
 	v->s_time = get_time();
+
+	v->someone_is_dead = (int *)malloc(sizeof(int));
+	*(v->someone_is_dead) = 0;
 	return (0);
 }
